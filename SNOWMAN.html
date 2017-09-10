@@ -1,0 +1,469 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="euc-kr">
+<title>SNOWMAN</title>
+<script type="text/javascript">
+
+var charx;
+var chary;
+	
+var imgWhite;
+var x1=0;
+var y1=35;
+var speed1=3;
+
+var imgGrad;
+var x2;
+var y2=35;
+var speed2=7;
+	
+var imgStar;
+var x3;
+var y3=35;
+var speed3=5;
+
+var imgBomb;
+var x4;
+var y4=35;
+var speed4=5;
+
+
+function firstPage(){
+	var fstCanvas = document.getElementById("myCanvas");
+	var fstctx=fstCanvas.getContext("2d");
+	var score_whiteCircle="+10";
+	var score_star="+20";
+	var score_rainbow="+50";
+	var score_bomb="-50";
+	var text1="제작자: ";
+	var text2="KMO&HJS"
+
+	fstctx.beginPath();
+	fstctx.fillStyle="black";
+	fstctx.fillRect(0,0, fstCanvas.width, fstCanvas.height);
+	fstctx.closePath();
+
+	fstctx.beginPath();
+	fstctx.strokeStyle="pink";
+	fstctx.lineWidth=5;
+	fstctx.strokeRect(1, 1, fstCanvas.width-2, fstCanvas.height-2);
+	fstctx.closePath();	
+
+	//흰 공
+	var whiteImage = new Image();
+	whiteImage.src="white.png";
+	whiteImage.onload = function(){
+		fstctx.drawImage(whiteImage, 50, 20, 100, 100);
+	}
+	//+10점
+	fstctx.beginPath();
+	fstctx.font="bold 25pt Batang";
+	fstctx.strokeStyle="white";
+	fstctx.lineWidth=2;
+	fstctx.strokeText(score_whiteCircle, 200, 80);
+	fstctx.closePath();
+
+	//별
+	var starImage = new Image();
+	starImage.src="Star.png";
+	starImage.onload = function(){
+		fstctx.drawImage(starImage, 50, 140, 100, 100);
+	}
+	//+20점
+	fstctx.beginPath();
+	fstctx.font="bold 25pt Batang"
+	fstctx.strokeStyle="white";
+	fstctx.lineWidth=2;
+	fstctx.strokeText(score_star, 200, 200);
+	fstctx.closePath();
+
+	//무지개 공
+	var gradImage = new Image();
+	gradImage.src="gradient.png";
+	gradImage.onload = function(){
+		fstctx.drawImage(gradImage, 50, 260, 100, 100);
+	}
+	//+50점
+	fstctx.beginPath();
+	fstctx.font="bold 25pt Batang"
+	fstctx.strokeStyle="white";
+	fstctx.lineWidth=2;
+	fstctx.strokeText(score_rainbow, 200, 320);
+	fstctx.closePath();
+
+	//폭탄
+	var bombImage = new Image();
+	bombImage.src="bomb.png";
+	bombImage.onload = function(){
+		fstctx.drawImage(bombImage, 50, 380, 100, 100);
+	}
+	//-50점
+	fstctx.beginPath();
+	fstctx.font="bold 25pt Batang"
+	fstctx.strokeStyle="white";
+	fstctx.lineWidth=2;
+	fstctx.strokeText(score_bomb, 200, 440);
+	fstctx.closePath();
+
+	//제작자
+   	fstctx.beginPath();
+   	fstctx.font="bold 25pt Batang"
+   	fstctx.strokeStyle="white";
+  	fstctx.lineWidth=2;
+   	fstctx.strokeText(text1, 370, 600);
+   	fstctx.closePath();
+
+   	fstctx.beginPath();
+   	fstctx.font="bold 25pt Batang"
+   	fstctx.strokeStyle="pink";
+   	fstctx.lineWidth=2;
+   	fstctx.strokeText(text2, 500, 600);
+   	fstctx.closePath();
+
+}
+
+
+
+
+var timerID; //타이머를 핸들링하기 위한 전역변수
+var time; //타이머 시작(60초)
+
+function start_timer(){   
+	time=60;
+	timerID=setTimeout(decrementTime, 60000);
+}
+
+// 남은 시간을 감소시키는 함수 
+function decrementTime(){ 
+	time= document.getElementById("time");
+       
+   	if(time > 0){
+    		time--;
+        }
+   	else { 
+      		// 시간이 만료되고 나서 할 작업을 여기에 작성
+      		alert("SCORE: "+ score_cur + "\n게임 종료!");
+
+		if(score_max<score_cur){
+			score_max=score_cur;
+		}
+     		// 시간이 0이 되었으므로 타이머를 중지함
+		clearInterval(timerID);	
+		score_cur=0;
+		gauge=0;
+
+		//각 아이템의 score
+		score_whiteBall=10;
+		score_rainbow=50;
+		score_star=20;
+		score_bomb=-50;
+		
+		speed1=3;
+		speed2=7;
+		speed3=5;
+		speed4=5;
+		
+	//	setInterval(play.dropDown,8);
+	//	start_timer();
+     	}
+}
+
+
+var gauge=0;;
+var score_cur=0;
+var score_max=0;
+
+//각 아이템의 score
+var score_whiteBall=10;
+var score_rainbow=50;
+var score_star=20;
+var score_bomb=-50;
+//각 아이템의 gauge 점수
+var gauge_whiteBall=18;
+var gauge_rainbow=58;
+var gauge_star=28;
+var gauge_bomb=-30;
+
+function play(){
+	
+  	start_timer();	
+
+	setInterval(dropDown, 8);
+
+	var theCanvas=document.getElementById("myCanvas");
+	var context= theCanvas.getContext("2d");
+
+	var imgChar = document.getElementById("character");
+	imgChar.src="snowman1.png";
+	document.getElementById("character").innerHTML=imgChar;	
+
+	x1=Math.floor(Math.random()*770);
+	x2=Math.floor(Math.random()*770);
+	x3=Math.floor(Math.random()*770);
+	x4=Math.floor(Math.random()*1200);
+
+	
+	function dropDown(){		
+		context.beginPath();
+		context.fillStyle="black";
+		context.fillRect(0,0, theCanvas.width, theCanvas.height);
+		context.fill();
+		context.closePath();
+
+		context.beginPath();
+		context.strokeStyle="pink";
+		context.strokeRect(1, 1, theCanvas.width-2, theCanvas.height-2);
+		context.lineWidth=5;
+		context.closePath();
+		//여기까지가  테두리랑 사각형 내부그리기
+
+		//게이지 바
+		context.beginPath();
+		context.strokeStyle="pink";
+		context.rect(10, 10, theCanvas.width-20, 30);
+		context.lineWidth=5;
+		context.lineJoin="round";
+		context.closePath();
+		context.stroke();		
+
+		context.beginPath();
+		context.strokeStyle="pink";
+		context.fillStyle="pink";
+		context.rect(10, 10, gauge, 30);
+		context.lineWidth=5;
+		context.lineJoin="round";
+		context.stroke();
+		context.fill();			
+		context.closePath();
+
+		//MAX SCORE(최고점수)
+		context.beginPath();
+		context.font="bold 20pt Batang"
+		context.strokeStyle="white";
+		context.lineWidth=2;
+		context.strokeText("MAX SCORE: "+ score_max, 20, 80);
+		context.closePath();
+
+
+		//CURRENT SCORE(현재점수)
+		context.beginPath();
+		context.font="bold 20pt Batang"
+		context.strokeStyle="white";
+		context.lineWidth=2;
+		context.strokeText("CURRENT SCORE: "+ score_cur, 20, 110);
+		context.closePath();
+		
+
+		charx=parseInt(imgChar.style.left);   // 움직이는 캐릭터의 현좌표 
+       		chary=parseInt(imgChar.style.top);
+		
+		//흰 공 좌표변환후 그리기
+		y1+=speed1;
+		imgWhite=document.getElementById("white");
+		imgWhite.src="white.png";
+		context.drawImage(imgWhite, x1, y1);
+
+		//흰공 먹었을때 점수올리기
+		if(y1+25>=chary && y1<=(chary+112)){
+			if(x1+25>=charx && x1<=(charx+95)){
+				score_cur += score_whiteBall;
+				gauge += gauge_whiteBall;
+				context.beginPath();
+				context.font="bold 25pt Batang";
+				context.strokeStyle="white";
+				context.lineWidth=2;
+				context.strokeText("SCORE: "+ score_cur, 20, 80);
+				context.closePath();	
+			
+				y1=35;	
+				x1=Math.floor(Math.random()*770);
+				
+			}
+		}
+		
+		//무지개공 좌표변환후 그리기
+		y2+=speed2;
+		imgGrad=document.getElementById("rainbow");
+		imgGrad.src="gradient.png";
+		context.drawImage(imgGrad, x2, y2);
+		//무지개공 먹었을 때 점수 올리기
+		if(y2+25>=chary && y2<=(chary+112)){
+			if(x2+25>=charx && x2<=(charx+95)){
+				score_cur += score_rainbow;
+				gauge += gauge_rainbow;
+				context.beginPath();
+				context.font="bold 25pt Batang"
+				context.strokeStyle="white";
+				context.lineWidth=2;
+				context.strokeText("SCORE: "+ score_cur, 20, 80);
+				context.closePath();
+				
+
+				y2=35;	
+				x2=Math.floor(Math.random()*770);
+			}
+		}
+		
+		//별 좌표변환후 그리기
+		y3+=speed3;
+		imgStar=document.getElementById("star");
+		imgStar.src="Star.png";
+		context.drawImage(imgStar, x3, y3);
+		//별 먹었을 때 점수 올리기
+		if(y3+45>=chary && y3<=(chary+112)){
+			if(x3+45>=charx && x3<=(charx+95)){
+				score_cur += score_star;
+				gauge +=gauge_star;
+				context.beginPath();
+				context.font="bold 25pt Batang"
+				context.strokeStyle="white";
+				context.lineWidth=2;
+				context.strokeText("SCORE: "+ score_cur, 20, 80);
+				context.closePath();
+				
+	
+				y3=35;	
+				x3=Math.floor(Math.random()*770);
+			}
+		}	
+		
+		//폭탄 좌표변환후 그리기
+		y4+=speed4;
+		imgBomb=document.getElementById("bomb");
+		imgBomb.src="bomb.png";
+		context.drawImage(imgBomb, x4, y4);
+		//폭탄먹었을 때 점수 깎기
+		if(y4+20>=chary+2 && y4<=(chary+87)){
+			if(x4+20>=charx+2 && x4<=(charx+70)){
+				score_cur += score_bomb;
+				gauge += gauge_bomb;
+	
+				context.beginPath();
+				context.font="bold 25pt Batang"
+				context.strokeStyle="white";
+				context.lineWidth=2;
+				context.strokeText("SCORE: "+ score_cur, 20, 80);
+				context.closePath();
+
+
+				y4=35;	
+				x4=Math.floor(Math.random()*1200);
+			}
+		}	
+	
+		if(y1>570)
+		{	y1=35;	
+			x1=Math.floor(Math.random()*760);
+		}
+		if(y2>570)
+		{
+			y2=35;
+			x2=Math.floor(Math.random()*1200);
+		}
+		if(y3>570){
+			y3=35;
+			x3=Math.floor(Math.random()*1000);
+		}
+		if(y4>570){
+			y4=35;
+			x4=Math.floor(Math.random()*1200);
+		}
+
+		if(gauge >= theCanvas.width-20)
+		{
+			//점수 두배!
+			score_whiteBall = 20;
+			score_rainbow =100;
+			score_star =40;
+
+			speed1=7;
+			speed2=11;	
+			speed3=9;
+			speed4=9;
+			gauge=theCanvas.width-20;
+
+			
+			//FEVER!
+			context.beginPath();
+			context.font="bold 40pt Batang"
+			context.strokeStyle="pink";
+			context.lineWidth=2;
+			context.strokeText("FEVER!", 300, 280);
+			context.closePath();			
+			
+		}
+		else{
+			speed1=3;
+			speed2=7;
+			speed3=5;
+			speed4=5;
+		}
+
+	}	
+	//플레이버튼을 처음에 한번 누르면 disabled 값을 true 로 바꿈!
+	document.getElementById("play").disabled=true;	
+}
+
+
+document.onkeydown=keydown;
+function keydown(e){
+	var x = parseInt(document.getElementById("character").style.left);
+    	var y = parseInt(document.getElementById("character").style.top);	
+
+	if(e.keyCode == 37){	x =x- 15;	}
+
+	else if(e.keyCode == 39){	x =x+ 15;	}
+	if(x>720){x=x-15;}
+	else if(x<0){x=x+15;}
+	
+	document.getElementById("character").style.left = x + "px";
+  	document.getElementById("character").style.top = y + "px";
+}
+
+document.onkeyup=keyup;
+function keydown(e){
+	var x = parseInt(document.getElementById("character").style.left);
+    	var y = parseInt(document.getElementById("character").style.top);	
+
+	if(e.keyCode == 37){	x =x- 15;	}
+
+	else if(e.keyCode == 39){	x =x+ 15;	}
+	if(x>720){x=x-15;}
+	else if(x<0){x=x+15;}
+	
+	document.getElementById("character").style.left = x + "px";
+  	document.getElementById("character").style.top = y + "px";
+}
+
+
+
+</script>
+</head>
+<body onLoad="firstPage();">
+
+<img id="character"  style="position: absolute; left: 400px; top:500px; visibility: visible;"/>
+
+<img id="white" style="position: absolute; visibility:hidden;" />
+<img id="rainbow" style="position:absolute; visibility:hidden;" />
+<img id="star" style="position:absolute; visibility:hidden;"/>
+<img id="bomb" style="position:absolute; visibility:hidden;" />
+<div id="time" style="position:absolute; left:750; top:600; visibility:hidden;">
+
+</div>
+<canvas id="myCanvas" width="800" height="620">Your browser does not support HTML5 Canvas.</canvas>
+<br/>
+
+<input type="image" src="PLAY.png" id="play" alt="게임시작" onclick="play();"/>
+
+
+</body>
+</html>
+
+
+
+
+
+
+
